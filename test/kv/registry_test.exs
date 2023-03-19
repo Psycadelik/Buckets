@@ -1,16 +1,17 @@
 defmodule KV.RegistryTest do
   use ExUnit.Case, async: true
 
-  @moduledoc """
+  setup do
+    registry = start_supervised!(KV.Registry)
+    %{registry: registry}
+  end
+
+  @doc """
   start_supervised!/2 function:
     - injected into our test module by use ExUnit.Case
     - It does the job of starting the KV.Registry process, by calling
       its start_link/1 function
   """
-  setup do
-    registry = start_supervised!(KV.Registry)
-    %{registry: registry}
-  end
 
   test "spawns buckets", %{registry: registry} do
     assert KV.Registry.lookup(registry, "shopping") == :error
