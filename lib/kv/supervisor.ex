@@ -15,9 +15,15 @@ defmodule KV.Supervisor do
   @impl true
   def init(:ok) do
     children = [
+      # add a dynamic supervisor as a child
+      # NB: we end up with a supervision tree when we begin supervisors
+      # that supervise other supervisors
+      {DynamicSupervisor, name: KV.BucketSupervisor, strategy: :one_for_one},
       {KV.Registry, name: KV.Registry}
     ]
 
-    Supervisor.init(children, strategy: :one_for_one)
+    # :one_for_all strategy - the supervisor will kill and restart all of its
+    # children processes whenever any one of them dies
+    Supervisor.init(children, strategy: :one_for_all)
   end
 end
